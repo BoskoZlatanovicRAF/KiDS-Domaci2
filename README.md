@@ -17,31 +17,31 @@ It is necessary for the system to support "scripted" running of multiple nodes, 
 When a user on any node runs the snapshot command, that node becomes the initiator of the snapshot.
 If the node is already in snapshot mode (eg a snapshot was recently started that was not completed), the system prints an error and the snapshot is not started.
 
-#### Sending a Snapshot Request
+* #### Sending a Snapshot Request
 The initiator sends a "SNAPSHOT_REQUEST" message to all its neighbors (according to the configuration file) using only existing connections.
-##### Blocking Normal Communication
+* ##### Blocking Normal Communication
 After receiving "SNAPSHOT_REQUEST", each node goes into snapshot mode. In this mode:
 Blocks new application messages from being sent (or they are stored in a temporary buffer).
 New messages are prevented from mixing with those that could disrupt the snapshot.
-#### Recording of Local Status
+* #### Recording of Local Status
 Each node records its current state (current number of bitcakes, values ​​of local variables).
 Since the channels are FIFO, all messages sent before the snapshot request arrive before the node goes into snapshot mode, so the local state is captured at the point when the node stops normal operation.
-#### Channel Status recording
+* #### Channel Status recording
 Since before the snapshot all messages are processed in FIFO order, and communication is temporarily blocked, the state of each input channel is considered fixed (or even empty, if the sending of new messages is blocked).
 In this way, it is not necessary to distinguish between "before" and "after" messages - synchronization allows the snapshot to be performed consistently.
-#### Snapshot Confirmation
+* #### Snapshot Confirmation
 After each node has recorded its local state and (if necessary) the state of its channels, it sends an acknowledgment (ACK) back to the initiator.
 The initiator waits to receive ACK messages from all nodes. Only when everyone confirms that they have finished recording the state, the snapshot is considered complete.
-#### Restoration of Normal Work
+* #### Restoration of Normal Work
 After the collected ACK messages, the initiator sends a "RESUME" message to all nodes, which ends the snapshot mode.
 Nodes then resume normal communication, processing messages that may have been buffered.
 
 ### Few problems that require attention
 
-#### Problem 1
+* #### Problem 1
 Problem: The user requests the creation of a snapshot on a node that has already started the creation of a snapshot, but that snapshot has not been completed. 
 Solution: Print the error to the console and continue with the work normally
 
-#### Problem 2
+* #### Problem 2
 Problem: NOTE: if a user initiates a snapshot on multiple nodes concurrently, the system is allowed to behave unpredictably.
 Solution: It is not resolved.It is not even possible to launch it concurrently. There is no such scenario.
