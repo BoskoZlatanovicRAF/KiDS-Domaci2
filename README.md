@@ -13,13 +13,13 @@ Two nodes may exchange messages only if they are listed as neighbors in the conf
 It is necessary for the system to support "scripted" running of multiple nodes, where the commands for each node are read from a text file, and the outputs for each node are written in separate files.
 
 ### Coordinated-Checkpointing
-#### Snapshot initiation
+* #### Snapshot initiation
 When a user on any node runs the snapshot command, that node becomes the initiator of the snapshot.
 If the node is already in snapshot mode (eg a snapshot was recently started that was not completed), the system prints an error and the snapshot is not started.
 
 * #### Sending a Snapshot Request
 The initiator sends a "SNAPSHOT_REQUEST" message to all its neighbors (according to the configuration file) using only existing connections.
-* ##### Blocking Normal Communication
+* #### Blocking Normal Communication
 After receiving "SNAPSHOT_REQUEST", each node goes into snapshot mode. In this mode:
 Blocks new application messages from being sent (or they are stored in a temporary buffer).
 New messages are prevented from mixing with those that could disrupt the snapshot.
