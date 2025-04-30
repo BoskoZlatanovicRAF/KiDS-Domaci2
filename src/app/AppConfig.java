@@ -125,18 +125,21 @@ public class AppConfig {
 			snapshotType = "none";
 		}
 		switch (snapshotType) {
-		case "naive":
-			SNAPSHOT_TYPE = SnapshotType.NAIVE;
-			break;
-		case "cl":
-			SNAPSHOT_TYPE = SnapshotType.CHANDY_LAMPORT;
-			break;
-		case "ly":
-			SNAPSHOT_TYPE = SnapshotType.LAI_YANG;
-			break;
-		default:
-			timestampedErrorPrint("Problem reading snapshot algorithm. Defaulting to NONE.");
-			SNAPSHOT_TYPE = SnapshotType.NONE;
+			case "naive":
+				SNAPSHOT_TYPE = SnapshotType.NAIVE;
+				break;
+			case "cl":
+				SNAPSHOT_TYPE = SnapshotType.CHANDY_LAMPORT;
+				break;
+			case "ly":
+				SNAPSHOT_TYPE = SnapshotType.LAI_YANG;
+				break;
+			case "cc":
+				SNAPSHOT_TYPE = SnapshotType.COORDINATED_CHECKPOINTING;
+				break;
+			default:
+				timestampedErrorPrint("Problem reading snapshot algorithm. Defaulting to NONE.");
+				SNAPSHOT_TYPE = SnapshotType.NONE;
 		}
 		
 		for (int i = 0; i < serventCount; i++) {

@@ -1,13 +1,16 @@
 package app.snapshot_bitcake;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import app.AppConfig;
+import app.ServentInfo;
 import servent.message.Message;
+import servent.message.snapshot.CCResumeMessage;
+import servent.message.snapshot.CCSnapshotRequestMessage;
 import servent.message.util.MessageUtil;
 
 /**
@@ -29,14 +32,20 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 	
 	private BitcakeManager bitcakeManager;
 
+	// CC algorithm
+	private Map<Integer, CCSnapshotResult> collectedCCValues = new ConcurrentHashMap<>();
+
+
 	public SnapshotCollectorWorker(SnapshotType snapshotType) {
 		this.snapshotType = snapshotType;
 		
 		switch(snapshotType) {
-
-		case NONE:
-			AppConfig.timestampedErrorPrint("Making snapshot collector without specifying type. Exiting...");
-			System.exit(0);
+			case COORDINATED_CHECKPOINTING:
+				bitcakeManager = new CCBitcakeManager();
+				break;
+			case NONE:
+				AppConfig.timestampedErrorPrint("Making snapshot collector without specifying type. Exiting...");
+				System.exit(0);
 		}
 	}
 	
@@ -74,20 +83,44 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 			
 			//1 send asks
 			switch (snapshotType) {
+				case COORDINATED_CHECKPOINTING:
+					AppConfig.timestampedStandardPrint("Initiating coordinated snapshot");
 
-			case NONE:
-				//Shouldn't be able to come here. See constructor. 
-				break;
+					// Start the snapshot locally
+					if (bitcakeManager instanceof CCBitcakeManager ccManager) {
+						// Create a self-message to initiate the snapshot
+						Message selfRequest = new CCSnapshotRequestMessage(
+								AppConfig.myServentInfo,
+								AppConfig.myServentInfo
+						);
+						ccManager.handleSnapshotRequest(selfRequest, this);
+					}
+					break;
+				case NONE:
+					//Shouldn't be able to come here. See constructor.
+					break;
 			}
+
+
+
 			
 			//2 wait for responses or finish
 			boolean waiting = true;
 			while (waiting) {
-				switch (snapshotType) {
 
-				case NONE:
-					//Shouldn't be able to come here. See constructor. 
-					break;
+				switch (snapshotType) {
+					case COORDINATED_CHECKPOINTING:
+						AppConfig.timestampedStandardPrint("Checking for completion: " +
+								collectedCCValues.size() + "/" + AppConfig.getServentCount());
+
+						if (collectedCCValues.size() == AppConfig.getServentCount()) {
+							waiting = false;
+						}
+						break;
+
+					case NONE:
+						//Shouldn't be able to come here. See constructor.
+						break;
 				}
 				
 				try {
@@ -104,26 +137,59 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 			//print
 			int sum;
 			switch (snapshotType) {
-			case NAIVE:
-				sum = 0;
-				for (Entry<String, Integer> itemAmount : collectedNaiveValues.entrySet()) {
-					sum += itemAmount.getValue();
-					AppConfig.timestampedStandardPrint(
-							"Info for " + itemAmount.getKey() + " = " + itemAmount.getValue() + " bitcake");
-				}
-				
-				AppConfig.timestampedStandardPrint("System bitcake count: " + sum);
-				
-				collectedNaiveValues.clear(); //reset for next invocation
-				break;
+				case NAIVE:
+					sum = 0;
+					for (Entry<String, Integer> itemAmount : collectedNaiveValues.entrySet()) {
+						sum += itemAmount.getValue();
+						AppConfig.timestampedStandardPrint(
+								"Info for " + itemAmount.getKey() + " = " + itemAmount.getValue() + " bitcake");
+					}
+
+					AppConfig.timestampedStandardPrint("System bitcake count: " + sum);
+
+					collectedNaiveValues.clear(); //reset for next invocation
+					break;
+
+				case COORDINATED_CHECKPOINTING:
+					// Check if we have collected all responses
+					if (collectedCCValues.size() == AppConfig.getServentCount()) {
+						// Print results
+						sum = 0;
+						for (Entry<Integer, CCSnapshotResult> serventResult : collectedCCValues.entrySet()) {
+							sum += serventResult.getValue().getRecordedAmount();
+							AppConfig.timestampedStandardPrint(
+									"Node " + serventResult.getKey() + " has " +
+											serventResult.getValue().getRecordedAmount() + " bitcakes");
+						}
+
+						AppConfig.timestampedStandardPrint("System bitcake count: " + sum);
+
+						// Send RESUME messages to all servents to unblock transactions
+						AppConfig.timestampedStandardPrint("Sending RESUME messages to all servents");
+						for (int i = 0; i < AppConfig.getServentCount(); i++) {
+							if (i == AppConfig.myServentInfo.getId()) {
+								// Unblock ourselves
+								if (bitcakeManager instanceof CCBitcakeManager) {
+									((CCBitcakeManager) bitcakeManager).unblockSnapshot();
+								}
+								continue;
+							}
+
+							ServentInfo serventInfo = AppConfig.getInfoById(i);
+							CCResumeMessage resumeMessage = new CCResumeMessage(AppConfig.myServentInfo, serventInfo);
+							MessageUtil.sendMessage(resumeMessage);
+						}
+
+						// Reset for next snapshot
+						collectedCCValues.clear();
+						collecting.set(false);
+					}
+					break;
 
 
-
-
-
-			case NONE:
-				//Shouldn't be able to come here. See constructor. 
-				break;
+				case NONE:
+					//Shouldn't be able to come here. See constructor.
+					break;
 			}
 			collecting.set(false);
 		}
@@ -134,6 +200,12 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 	public void addNaiveSnapshotInfo(String snapshotSubject, int amount) {
 		collectedNaiveValues.put(snapshotSubject, amount);
 	}
+
+	@Override
+	public void addCCSnapshotInfo(int id, CCSnapshotResult ccSnapshotResult) {
+		collectedCCValues.put(id, ccSnapshotResult);
+	}
+
 	
 	@Override
 	public void startCollecting() {

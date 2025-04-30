@@ -21,6 +21,8 @@ public class NullSnapshotCollector implements SnapshotCollector {
 
 	@Override
 	public void addNaiveSnapshotInfo(String snapshotSubject, int amount) {}
+	@Override
+	public void addCCSnapshotInfo(int id, CCSnapshotResult ccSnapshotResult) {}
 
 
 	@Override

@@ -12,10 +12,14 @@ import java.util.concurrent.Executors;
 import app.AppConfig;
 import app.Cancellable;
 import app.snapshot_bitcake.SnapshotCollector;
+import app.snapshot_bitcake.SnapshotCollectorWorker;
 import app.snapshot_bitcake.SnapshotType;
 import servent.handler.MessageHandler;
 import servent.handler.NullHandler;
 import servent.handler.TransactionHandler;
+import servent.handler.snapshot.CCAckHandler;
+import servent.handler.snapshot.CCResumeHandler;
+import servent.handler.snapshot.CCSnapshotRequestHandler;
 import servent.message.Message;
 import servent.message.MessageType;
 import servent.message.util.MessageUtil;
@@ -74,12 +78,22 @@ public class SimpleServentListener implements Runnable, Cancellable {
 				 * because that way is much simpler and less error prone.
 				 */
 				switch (clientMessage.getMessageType()) {
-				case TRANSACTION:
-					messageHandler = new TransactionHandler(clientMessage, snapshotCollector.getBitcakeManager());
-					break;
+					case TRANSACTION:
+						messageHandler = new TransactionHandler(clientMessage, snapshotCollector.getBitcakeManager());
+						break;
 
-				case POISON:
-					break;
+					case CC_SNAPSHOT_REQUEST:
+						messageHandler = new CCSnapshotRequestHandler(clientMessage, snapshotCollector);
+						break;
+					case CC_ACK:
+						messageHandler = new CCAckHandler(clientMessage, (SnapshotCollectorWorker)snapshotCollector);
+						break;
+					case CC_RESUME:
+						messageHandler = new CCResumeHandler(clientMessage, snapshotCollector);
+						break;
+
+					case POISON:
+						break;
 				}
 				
 				threadPool.submit(messageHandler);

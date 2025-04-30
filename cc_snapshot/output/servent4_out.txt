@@ -1,0 +1,93 @@
+00:27:57 - Starting servent [4|localhost|1500]
+00:27:57 - Pausing for 500 ms
+00:27:57 - Pausing for 15000 ms
+00:27:58 - Initiating coordinated snapshot
+00:27:58 - Processing snapshot request from initiator 4
+00:27:58 - CC snapshot - local state recorded: 1000
+00:27:58 - Forwarding CC_SNAPSHOT_REQUEST to 3
+00:27:58 - Forwarding CC_SNAPSHOT_REQUEST to 5
+00:27:58 - Checking for completion: 1/7
+00:27:58 - Got message [5|70|5|TRANSACTION|4]
+00:27:58 - Got message [5|47|6|TRANSACTION|4]
+00:27:58 - Got message [5|84|6|TRANSACTION|4]
+00:27:58 - Got message [5|118|6|TRANSACTION|4]
+00:27:58 - Got message [5|147|6|TRANSACTION|4]
+00:27:58 - Got message [5|106|7|TRANSACTION|4]
+00:27:58 - Got message [5|11|5|TRANSACTION|4]
+00:27:58 - Got message [5|77|10|TRANSACTION|4]
+00:27:58 - Got message [5|80|4|TRANSACTION|4]
+00:27:58 - Got message [5|73|4|TRANSACTION|4]
+00:27:58 - Got message [5|107|4|TRANSACTION|4]
+00:27:58 - Got message [5|82|10|TRANSACTION|4]
+00:27:58 - Got message [5|89|5|TRANSACTION|4]
+00:27:58 - Got message [5|46|3|TRANSACTION|4]
+00:27:58 - Got message [5|88|5|TRANSACTION|4]
+00:27:58 - Sending message [4|1||CC_SNAPSHOT_REQUEST|3]
+00:27:58 - Got message [5|16|8|TRANSACTION|4]
+00:27:58 - Got message [5|76|6|TRANSACTION|4]
+00:27:58 - Got message [5|101|3|TRANSACTION|4]
+00:27:59 - Got message [5|10|7|TRANSACTION|4]
+00:27:59 - Got message [5|115|10|TRANSACTION|4]
+00:27:59 - Got message [5|42|10|TRANSACTION|4]
+00:27:59 - Got message [5|49|9|TRANSACTION|4]
+00:27:59 - Got message [5|19|1|TRANSACTION|4]
+00:27:59 - Got message [5|119|9|TRANSACTION|4]
+00:27:59 - Checking for completion: 1/7
+00:27:59 - Got message [5|20|7|TRANSACTION|4]
+00:27:59 - Got message [5|131|5|TRANSACTION|4]
+00:27:59 - Got message [5|12|2|TRANSACTION|4]
+00:27:59 - Got message [5|94|6|TRANSACTION|4]
+00:27:59 - Got message [5|44|6|TRANSACTION|4]
+00:27:59 - Got message [5|38|7|TRANSACTION|4]
+00:27:59 - Got message [5|133|10|TRANSACTION|4]
+00:27:59 - Sending message [4|2||CC_SNAPSHOT_REQUEST|5]
+00:27:59 - Got message [5|45|5|TRANSACTION|4]
+00:27:59 - Got message [5|41|2|TRANSACTION|4]
+00:27:59 - Got message [5|50|7|TRANSACTION|4]
+00:27:59 - Got message [5|145|7|TRANSACTION|4]
+00:27:59 - Got message [5|43|4|TRANSACTION|4]
+00:27:59 - Got message [5|68|8|TRANSACTION|4]
+00:27:59 - Got message [5|17|6|TRANSACTION|4]
+00:27:59 - Got message [5|65|8|TRANSACTION|4]
+00:27:59 - Got message [5|104|10|TRANSACTION|4]
+00:27:59 - Got message [5|22|6|TRANSACTION|4]
+00:27:59 - Got message [5|135|9|TRANSACTION|4]
+00:27:59 - Got message [5|14|5|TRANSACTION|4]
+00:27:59 - Got message [5|15|3|TRANSACTION|4]
+00:27:59 - Got message [5|134|6|TRANSACTION|4]
+00:27:59 - Got message [5|132|2|TRANSACTION|4]
+00:27:59 - Got message [5|103|9|TRANSACTION|4]
+00:27:59 - Got message [5|136|3|TRANSACTION|4]
+00:27:59 - Got message [5|130|6|TRANSACTION|4]
+00:27:59 - Got message [5|91|9|TRANSACTION|4]
+00:28:00 - Got message [3|0|1406|CC_ACK|4]
+00:28:00 - Received ACK from node 3 with amount 1406
+00:28:00 - Checking for completion: 2/7
+00:28:00 - Got message [5|150|755|CC_ACK|4]
+00:28:00 - Received ACK from node 5 with amount 755
+00:28:00 - Got message [6|200|1409|CC_ACK|4]
+00:28:00 - Received ACK from node 6 with amount 1409
+00:28:00 - Got message [1|200|663|CC_ACK|4]
+00:28:00 - Received ACK from node 1 with amount 663
+00:28:00 - Got message [2|200|502|CC_ACK|4]
+00:28:00 - Received ACK from node 2 with amount 502
+00:28:01 - Checking for completion: 6/7
+00:28:01 - Got message [0|150|1021|CC_ACK|4]
+00:28:01 - Received ACK from node 0 with amount 1021
+00:28:02 - Checking for completion: 7/7
+00:28:03 - Node 0 has 1021 bitcakes
+00:28:03 - Node 1 has 663 bitcakes
+00:28:03 - Node 2 has 502 bitcakes
+00:28:03 - Node 3 has 1406 bitcakes
+00:28:03 - Node 4 has 1000 bitcakes
+00:28:03 - Node 5 has 755 bitcakes
+00:28:03 - Node 6 has 1409 bitcakes
+00:28:03 - System bitcake count: 6756
+00:28:03 - Sending RESUME messages to all servents
+00:28:03 - Sending message [4|5||CC_RESUME|2]
+00:28:04 - Sending message [4|8||CC_RESUME|6]
+00:28:04 - Sending message [4|6||CC_RESUME|3]
+00:28:04 - Sending message [4|3||CC_RESUME|0]
+00:28:04 - Sending message [4|7||CC_RESUME|5]
+00:28:04 - Sending message [4|4||CC_RESUME|1]
+00:28:12 - Stopping...
