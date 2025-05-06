@@ -16,9 +16,10 @@ import servent.message.MessageType;
 /**
  * For now, just the read and send implementation, based on Java serializing.
  * Not too smart. Doesn't even check the neighbor list, so it actually allows cheating.
- * 
+ *
  * Depending on the configuration it delegates sending either to a {@link DelayedMessageSender}
- * 
+ * in a new thread (non-FIFO) or stores the message in a queue for the {@link FifoSendWorker} (FIFO).
+ *
  * When reading, if we are FIFO, we send an ACK message on the same socket, so the other side
  * knows they can send the next message.
  * @author bmilojkovic
@@ -30,7 +31,7 @@ public class MessageUtil {
 	 * Normally this should be true, because it helps with debugging.
 	 * Flip this to false to disable printing every message send / receive.
 	 */
-	public static final boolean MESSAGE_UTIL_PRINTING = true;
+	public static final boolean MESSAGE_UTIL_PRINTING = false;
 	
 	public static Map<Integer, BlockingQueue<Message>> pendingMessages = new ConcurrentHashMap<>();
 	public static Map<Integer, BlockingQueue<Message>> pendingMarkers = new ConcurrentHashMap<>();

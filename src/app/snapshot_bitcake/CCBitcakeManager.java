@@ -7,27 +7,41 @@ import servent.message.snapshot.CCAckMessage;
 import servent.message.snapshot.CCSnapshotRequestMessage;
 import servent.message.util.MessageUtil;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CCBitcakeManager implements BitcakeManager{
+public class CCBitcakeManager implements BitcakeManager {
     private final AtomicInteger currentAmount = new AtomicInteger(1000);
     private final AtomicBoolean snapshotBlocked = new AtomicBoolean(false);
+    private final AtomicInteger snapshotAmount = new AtomicInteger(0);
+    private final Queue<Integer> pendingTransactions = new ConcurrentLinkedQueue<>();
 
-    // Add a flag to track if we've processed a request in this snapshot round
     private volatile boolean processedRequest = false;
     private volatile int initiatorId = -1;
 
+    public CCBitcakeManager() {
+        AppConfig.timestampedStandardPrint("Starting with " + currentAmount.get() + " bitcakes.");
+    }
+
     @Override
     public void takeSomeBitcakes(int amount) {
-        if (snapshotBlocked.get()) return;
+        // Always update the actual balance
         currentAmount.getAndAdd(-amount);
+
+        // If snapshot is blocked, record this transaction for snapshot calculation
+        if (snapshotBlocked.get()) {
+            pendingTransactions.add(-amount);
+        }
     }
 
     @Override
     public void addSomeBitcakes(int amount) {
-        if (snapshotBlocked.get()) return;
         currentAmount.getAndAdd(amount);
+        if (snapshotBlocked.get()) {
+            pendingTransactions.add(amount);
+        }
     }
 
     @Override
@@ -36,69 +50,53 @@ public class CCBitcakeManager implements BitcakeManager{
     }
 
     public void blockSnapshot() {
+        snapshotAmount.set(currentAmount.get());
         snapshotBlocked.set(true);
     }
 
     public void unblockSnapshot() {
         snapshotBlocked.set(false);
-        processedRequest = false;
-        initiatorId = -1;
+        snapshotAmount.set(0);
     }
 
-    /**
-     * Handle a snapshot request - record state and propagate request
-     */
-    public void handleSnapshotRequest(Message requestMessage, SnapshotCollector collector) {
-        // Only process one request per snapshot round
-        if (processedRequest) {
-            return;
+    public int getSnapshotAmount() {
+        if (snapshotBlocked.get()) {
+            return snapshotAmount.get();
         }
+        return getCurrentBitcakeAmount();
+    }
 
+    public void handleSnapshotRequest(Message requestMessage, SnapshotCollector collector) {
         int reqInitiatorId = requestMessage.getOriginalSenderInfo().getId();
         int senderId = requestMessage.getOriginalSenderInfo().getId();
 
-        AppConfig.timestampedStandardPrint("Processing snapshot request from initiator " + reqInitiatorId);
+        if (!snapshotBlocked.get()) {
+            AppConfig.timestampedStandardPrint("Processing snapshot request from initiator " + reqInitiatorId);
 
-        // Block transactions
-        blockSnapshot();
-        processedRequest = true;
-        initiatorId = reqInitiatorId;
+            blockSnapshot();
+            int localAmount = getSnapshotAmount();
+            AppConfig.timestampedStandardPrint("CC snapshot - local state recorded: " + localAmount);
 
-        // Record local state
-        int localAmount = getCurrentBitcakeAmount();
-        AppConfig.timestampedStandardPrint("CC snapshot - local state recorded: " + localAmount);
+            CCSnapshotResult result = new CCSnapshotResult(AppConfig.myServentInfo.getId(), localAmount);
 
-        // Create snapshot result and send to initiator
-        CCSnapshotResult result = new CCSnapshotResult(AppConfig.myServentInfo.getId(), localAmount);
-
-        // Add our info to collector if we are the initiator
-        if (reqInitiatorId == AppConfig.myServentInfo.getId()) {
-            ((SnapshotCollectorWorker)collector).addCCSnapshotInfo(
-                    AppConfig.myServentInfo.getId(), result);
-        } else {
-            // Send ACK to initiator with our snapshot data
-            CCAckMessage ackMessage = new CCAckMessage(
-                    AppConfig.myServentInfo,
-                    AppConfig.getInfoById(reqInitiatorId),
-                    String.valueOf(localAmount)
-            );
-            MessageUtil.sendMessage(ackMessage);
-        }
-
-        // Forward request to all neighbors except the sender
-        for (Integer neighborId : AppConfig.myServentInfo.getNeighbors()) {
-            if (neighborId == senderId) {
-                continue; // Skip the node that sent us the request
+            if (reqInitiatorId == AppConfig.myServentInfo.getId()) {
+                ((SnapshotCollectorWorker) collector).addCCSnapshotInfo(AppConfig.myServentInfo.getId(), result);
+            } else {
+                CCAckMessage ackMessage = new CCAckMessage(AppConfig.myServentInfo, AppConfig.getInfoById(reqInitiatorId), String.valueOf(localAmount));
+                MessageUtil.sendMessage(ackMessage);
             }
 
-            ServentInfo neighborInfo = AppConfig.getInfoById(neighborId);
-            CCSnapshotRequestMessage forwardRequest = new CCSnapshotRequestMessage(
-                    requestMessage.getOriginalSenderInfo(), // Keep original initiator
-                    neighborInfo
-            );
-            AppConfig.timestampedStandardPrint("Forwarding CC_SNAPSHOT_REQUEST to " + neighborId);
-            MessageUtil.sendMessage(forwardRequest);
+            for (Integer neighborId : AppConfig.myServentInfo.getNeighbors()) {
+                if (neighborId == senderId) {
+                    continue; // Don't send back to sender
+                }
+
+                ServentInfo neighborInfo = AppConfig.getInfoById(neighborId);
+                CCSnapshotRequestMessage forwardRequest = new CCSnapshotRequestMessage(requestMessage.getOriginalSenderInfo(), neighborInfo);
+                AppConfig.timestampedStandardPrint("Forwarding CC_SNAPSHOT_REQUEST to " + neighborId);
+                MessageUtil.sendMessage(forwardRequest);
+            }
         }
     }
-
 }
+

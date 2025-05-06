@@ -9,6 +9,7 @@ import app.snapshot_bitcake.SnapshotCollectorWorker;
 import app.snapshot_bitcake.SnapshotType;
 import cli.CLIParser;
 import servent.SimpleServentListener;
+import servent.message.util.FifoSendWorker;
 import servent.message.util.MessageUtil;
 
 /**
@@ -33,7 +34,7 @@ public class ServentMain {
 		
 		String serventListFile = args[0];
 		
-		AppConfig.readConfig(serventListFile);
+		AppConfig.readConfig(serventListFile); // reads properties
 		
 		try {
 			serventId = Integer.parseInt(args[1]);
@@ -63,9 +64,9 @@ public class ServentMain {
 		MessageUtil.initializePendingMessages();
 		
 		AppConfig.timestampedStandardPrint("Starting servent " + AppConfig.myServentInfo);
-		
+
 		SnapshotCollector snapshotCollector;
-		
+
 		if (AppConfig.SNAPSHOT_TYPE == SnapshotType.NONE) {
 			snapshotCollector = new NullSnapshotCollector();
 		} else {
@@ -73,12 +74,26 @@ public class ServentMain {
 		}
 		Thread snapshotCollectorThread = new Thread(snapshotCollector);
 		snapshotCollectorThread.start();
-		
+
 		SimpleServentListener simpleListener = new SimpleServentListener(snapshotCollector);
 		Thread listenerThread = new Thread(simpleListener);
 		listenerThread.start();
-		
-		CLIParser cliParser = new CLIParser(simpleListener, snapshotCollector);
+
+		List<FifoSendWorker> senderWorkers = new ArrayList<>();
+		if (AppConfig.IS_FIFO) {
+			for (Integer neighbor : AppConfig.myServentInfo.getNeighbors()) {
+				FifoSendWorker senderWorker = new FifoSendWorker(neighbor);
+
+				Thread senderThread = new Thread(senderWorker);
+
+				senderThread.start();
+
+				senderWorkers.add(senderWorker);
+			}
+
+		}
+
+		CLIParser cliParser = new CLIParser(simpleListener, snapshotCollector, senderWorkers);
 		Thread cliThread = new Thread(cliParser);
 		cliThread.start();
 		

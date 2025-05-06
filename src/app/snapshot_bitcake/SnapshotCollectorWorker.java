@@ -2,7 +2,6 @@ package app.snapshot_bitcake;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -89,10 +88,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 					// Start the snapshot locally
 					if (bitcakeManager instanceof CCBitcakeManager ccManager) {
 						// Create a self-message to initiate the snapshot
-						Message selfRequest = new CCSnapshotRequestMessage(
-								AppConfig.myServentInfo,
-								AppConfig.myServentInfo
-						);
+						Message selfRequest = new CCSnapshotRequestMessage(AppConfig.myServentInfo, AppConfig.myServentInfo);
 						ccManager.handleSnapshotRequest(selfRequest, this);
 					}
 					break;
@@ -158,7 +154,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						for (Entry<Integer, CCSnapshotResult> serventResult : collectedCCValues.entrySet()) {
 							sum += serventResult.getValue().getRecordedAmount();
 							AppConfig.timestampedStandardPrint(
-									"Node " + serventResult.getKey() + " has " +
+									"Servent " + serventResult.getKey() + " has " +
 											serventResult.getValue().getRecordedAmount() + " bitcakes");
 						}
 
