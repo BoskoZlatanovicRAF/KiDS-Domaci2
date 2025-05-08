@@ -26,7 +26,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 	private AtomicBoolean collecting = new AtomicBoolean(false);
 	
 	private Map<String, Integer> collectedNaiveValues = new ConcurrentHashMap<>();
-	
+
 	private SnapshotType snapshotType = SnapshotType.NAIVE;
 	
 	private BitcakeManager bitcakeManager;
@@ -82,6 +82,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 			
 			//1 send asks
 			switch (snapshotType) {
+
 				case COORDINATED_CHECKPOINTING:
 					AppConfig.timestampedStandardPrint("Initiating coordinated snapshot");
 
@@ -133,18 +134,6 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 			//print
 			int sum;
 			switch (snapshotType) {
-				case NAIVE:
-					sum = 0;
-					for (Entry<String, Integer> itemAmount : collectedNaiveValues.entrySet()) {
-						sum += itemAmount.getValue();
-						AppConfig.timestampedStandardPrint(
-								"Info for " + itemAmount.getKey() + " = " + itemAmount.getValue() + " bitcake");
-					}
-
-					AppConfig.timestampedStandardPrint("System bitcake count: " + sum);
-
-					collectedNaiveValues.clear(); //reset for next invocation
-					break;
 
 				case COORDINATED_CHECKPOINTING:
 					// Check if we have collected all responses
@@ -191,7 +180,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 		}
 
 	}
-	
+
 	@Override
 	public void addNaiveSnapshotInfo(String snapshotSubject, int amount) {
 		collectedNaiveValues.put(snapshotSubject, amount);
