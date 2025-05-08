@@ -137,6 +137,12 @@ public class AppConfig {
 			case "cc":
 				SNAPSHOT_TYPE = SnapshotType.COORDINATED_CHECKPOINTING;
 				break;
+			case "ab":
+				SNAPSHOT_TYPE = SnapshotType.ACHARYA_BADRINATH;
+				break;
+			case "av":
+				SNAPSHOT_TYPE = SnapshotType.ALAGAR_VENKATESAN;
+				break;
 			default:
 				timestampedErrorPrint("Problem reading snapshot algorithm. Defaulting to NONE.");
 				SNAPSHOT_TYPE = SnapshotType.NONE;
@@ -184,6 +190,8 @@ public class AppConfig {
 			ServentInfo newInfo = new ServentInfo("localhost", i, serventPort, neighborList);
 			serventInfoList.add(newInfo);
 		}
+
+		CausalBroadcastShared.initializeVectorClock(serventCount);
 	}
 	
 	/**

@@ -13,15 +13,11 @@ import app.AppConfig;
 import app.Cancellable;
 import app.snapshot_bitcake.SnapshotCollector;
 import app.snapshot_bitcake.SnapshotCollectorWorker;
-import app.snapshot_bitcake.SnapshotType;
 import servent.handler.MessageHandler;
 import servent.handler.NullHandler;
 import servent.handler.TransactionHandler;
-import servent.handler.snapshot.CCAckHandler;
-import servent.handler.snapshot.CCResumeHandler;
-import servent.handler.snapshot.CCSnapshotRequestHandler;
+import servent.handler.snapshot.*;
 import servent.message.Message;
-import servent.message.MessageType;
 import servent.message.util.MessageUtil;
 
 public class SimpleServentListener implements Runnable, Cancellable {
@@ -92,6 +88,12 @@ public class SimpleServentListener implements Runnable, Cancellable {
 						messageHandler = new CCResumeHandler(clientMessage, snapshotCollector);
 						break;
 
+					case ACHARYA_BADRINATH_ASK_AMOUNT:
+						messageHandler = new ABAskAmountHandler(clientMessage, snapshotCollector);
+						break;
+					case ACHARYA_BADRINATH_TELL_AMOUNT:
+						messageHandler = new ABTellAmountHandler(clientMessage, snapshotCollector);
+						break;
 					case POISON:
 						break;
 				}

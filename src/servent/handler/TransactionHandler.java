@@ -1,6 +1,7 @@
 package servent.handler;
 
 import app.AppConfig;
+import app.CausalBroadcastShared;
 import app.snapshot_bitcake.BitcakeManager;
 import servent.message.Message;
 import servent.message.MessageType;
@@ -29,6 +30,9 @@ public class TransactionHandler implements MessageHandler {
 			}
 			
 			bitcakeManager.addSomeBitcakes(amountNumber);
+
+			CausalBroadcastShared.addReceivedTransaction(clientMessage);
+
 
 
 			AppConfig.timestampedErrorPrint("Transaction handler got: " + clientMessage);
