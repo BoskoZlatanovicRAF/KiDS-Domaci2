@@ -1,0 +1,33 @@
+15:14:19 - Starting servent [0|localhost|1100]
+15:14:19 - Starting with 1000 bitcakes.
+15:14:19 - Pausing for 1000 ms
+15:14:20 - Pausing for 10000 ms
+15:14:30 - Pausing for 4000 ms
+15:14:31 - Initiating coordinated snapshot
+15:14:31 - Processing snapshot request from initiator 0
+15:14:31 - CC snapshot - local state recorded: 953
+15:14:31 - Forwarding CC_SNAPSHOT_REQUEST to 1
+15:14:31 - Forwarding CC_SNAPSHOT_REQUEST to 2
+15:14:31 - Forwarding CC_SNAPSHOT_REQUEST to 3
+15:14:31 - Checking for completion: 1/5
+15:14:32 - Checking for completion: 1/5
+15:14:33 - Received ACK from node 1 with amount 1044
+15:14:33 - Received ACK from node 3 with amount 938
+15:14:33 - Checking for completion: 3/5
+15:14:34 - Received ACK from node 2 with amount 999
+15:14:34 - My info: [0|localhost|1100]
+15:14:34 - Neighbors:
+15:14:34 - 1 2 3 
+15:14:34 - Pausing for 20000 ms
+15:14:34 - Checking for completion: 4/5
+15:14:35 - Received ACK from node 4 with amount 1066
+15:14:35 - Checking for completion: 5/5
+15:14:36 - Servent 0 has 953 bitcakes
+15:14:36 - Servent 1 has 1044 bitcakes
+15:14:36 - Servent 2 has 999 bitcakes
+15:14:36 - Servent 3 has 938 bitcakes
+15:14:36 - Servent 4 has 1066 bitcakes
+15:14:36 - System bitcake count: 5000
+15:14:36 - Sending RESUME messages to all servents
+15:14:54 - Pausing for 10000 ms
+15:15:04 - Stopping...

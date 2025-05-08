@@ -1,0 +1,14 @@
+15:14:19 - Starting servent [1|localhost|1200]
+15:14:19 - Starting with 1000 bitcakes.
+15:14:19 - Pausing for 35000 ms
+15:14:32 - Received CC SNAPSHOT_REQUEST from 0
+15:14:32 - Processing snapshot request from initiator 0
+15:14:32 - CC snapshot - local state recorded: 1044
+15:14:32 - Forwarding CC_SNAPSHOT_REQUEST to 4
+15:14:34 - Received CC SNAPSHOT_REQUEST from 0
+15:14:37 - Received CC RESUME. Resuming normal operation...
+15:14:54 - My info: [1|localhost|1200]
+15:14:54 - Neighbors:
+15:14:54 - 0 4 
+15:14:54 - Pausing for 10000 ms
+15:15:04 - Stopping...
