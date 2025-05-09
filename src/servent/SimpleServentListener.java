@@ -89,10 +89,10 @@ public class SimpleServentListener implements Runnable, Cancellable {
 						break;
 
 					case ACHARYA_BADRINATH_ASK_AMOUNT:
-						messageHandler = new ABAskAmountHandler(clientMessage, snapshotCollector);
+						messageHandler = new ABTokenHandler(clientMessage, snapshotCollector);
 						break;
 					case ACHARYA_BADRINATH_TELL_AMOUNT:
-						messageHandler = new ABTellAmountHandler(clientMessage, snapshotCollector);
+						messageHandler = new ABAckHandler(clientMessage, snapshotCollector);
 						break;
 					case POISON:
 						break;

@@ -1,14 +1,11 @@
 package servent.handler.snapshot;
 
 import app.AppConfig;
-import app.snapshot_bitcake.CCBitcakeManager;
+import app.snapshot_bitcake.cc_coordinated_checkpointing.CCBitcakeManager;
 import app.snapshot_bitcake.SnapshotCollector;
-import app.snapshot_bitcake.SnapshotType;
 import servent.handler.MessageHandler;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.snapshot.CCAckMessage;
-import servent.message.util.MessageUtil;
 
 public class CCSnapshotRequestHandler implements MessageHandler {
 

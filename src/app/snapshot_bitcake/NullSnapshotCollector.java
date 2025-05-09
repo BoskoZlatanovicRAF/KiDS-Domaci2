@@ -1,5 +1,6 @@
 package app.snapshot_bitcake;
 
+import app.snapshot_bitcake.cc_coordinated_checkpointing.CCSnapshotResult;
 import servent.message.Message;
 
 import java.util.List;

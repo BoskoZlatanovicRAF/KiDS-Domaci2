@@ -5,14 +5,14 @@ import app.snapshot_bitcake.SnapshotCollector;
 import servent.handler.MessageHandler;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.snapshot.ABTellAmountMessage;
+import servent.message.snapshot.ABAckMessage;
 
-public class ABTellAmountHandler implements MessageHandler {
+public class ABAckHandler implements MessageHandler {
 
     private final Message clientMessage;
     private final SnapshotCollector snapshotCollector;
 
-    public ABTellAmountHandler(Message clientMessage, SnapshotCollector snapshotCollector) {
+    public ABAckHandler(Message clientMessage, SnapshotCollector snapshotCollector) {
         this.clientMessage = clientMessage;
         this.snapshotCollector = snapshotCollector;
     }
@@ -22,7 +22,7 @@ public class ABTellAmountHandler implements MessageHandler {
         try {
             if (clientMessage.getMessageType() == MessageType.ACHARYA_BADRINATH_TELL_AMOUNT) {
                 int neighborAmount = Integer.parseInt(clientMessage.getMessageText());
-                ABTellAmountMessage tellAmountMessage = (ABTellAmountMessage) clientMessage;
+                ABAckMessage tellAmountMessage = (ABAckMessage) clientMessage;
 
                 snapshotCollector.addAcharyaBadrinathSnapshotInfo(
                         "node" + clientMessage.getOriginalSenderInfo().getId(),

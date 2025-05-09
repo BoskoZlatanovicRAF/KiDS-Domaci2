@@ -7,18 +7,18 @@ import app.snapshot_bitcake.SnapshotCollector;
 import servent.handler.MessageHandler;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.snapshot.ABTellAmountMessage;
+import servent.message.snapshot.ABAckMessage;
 import servent.message.util.MessageUtil;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ABAskAmountHandler implements MessageHandler {
+public class ABTokenHandler implements MessageHandler {
 
     private final Message clientMessage;
     private final SnapshotCollector snapshotCollector;
 
-    public ABAskAmountHandler(Message clientMessage, SnapshotCollector snapshotCollector) {
+    public ABTokenHandler(Message clientMessage, SnapshotCollector snapshotCollector) {
         this.clientMessage = clientMessage;
         this.snapshotCollector = snapshotCollector;
     }
@@ -27,11 +27,15 @@ public class ABAskAmountHandler implements MessageHandler {
     public void run() {
         if (clientMessage.getMessageType() == MessageType.ACHARYA_BADRINATH_ASK_AMOUNT) {
             BitcakeManager bitcakeManager = snapshotCollector.getBitcakeManager();
+
+            //02. Process pᵢ records its local state upon receiving the token.
             int currentAmount = bitcakeManager.getCurrentBitcakeAmount();
 
             Map<Integer, Integer> vectorClock = new ConcurrentHashMap<>(CausalBroadcastShared.getVectorClock());
 
-            Message tellMessage = new ABTellAmountMessage(
+
+            //03. Each process maintains SENT and RECD arrays, and sends them to the initiator.
+            Message tellMessage = new ABAckMessage(
                     AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(),
                     null, vectorClock, currentAmount,
                     CausalBroadcastShared.getSendTransactions(),
@@ -39,6 +43,7 @@ public class ABAskAmountHandler implements MessageHandler {
             );
 
             CausalBroadcastShared.commitCausalMessage(tellMessage);
+            //04. Process pᵢ sends an acknowledgment to the initiator.
             MessageUtil.sendMessage(tellMessage);
 
 

@@ -9,8 +9,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import app.AppConfig;
 import app.CausalBroadcastShared;
 import app.ServentInfo;
+import app.snapshot_bitcake.ab_acharya_badrinath.ABBitcakeManager;
+import app.snapshot_bitcake.ab_acharya_badrinath.ABSnapshotResult;
+import app.snapshot_bitcake.cc_coordinated_checkpointing.CCBitcakeManager;
+import app.snapshot_bitcake.cc_coordinated_checkpointing.CCSnapshotResult;
 import servent.message.Message;
-import servent.message.snapshot.ABAskAmountMessage;
+import servent.message.snapshot.ABTokenMessage;
 import servent.message.snapshot.CCResumeMessage;
 import servent.message.snapshot.CCSnapshotRequestMessage;
 import servent.message.util.MessageUtil;
@@ -116,12 +120,12 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 				case ACHARYA_BADRINATH:
 					AppConfig.timestampedStandardPrint("Initiating Acharya-Badrinath snapshot");
 
-					// Send token to all servents (including self)
+					//01. The initiator process broadcasts a token to every process, including itself.
 					for (int i = 0; i < AppConfig.getServentCount(); i++) {
 						ServentInfo serventInfo = AppConfig.getInfoById(i);
 						Map<Integer, Integer> vectorClock = new ConcurrentHashMap<>(CausalBroadcastShared.getVectorClock());
 
-						Message tokenMessage = new ABAskAmountMessage(AppConfig.myServentInfo, serventInfo,null, vectorClock);
+						Message tokenMessage = new ABTokenMessage(AppConfig.myServentInfo, serventInfo,null, vectorClock);
 						MessageUtil.sendMessage(tokenMessage);
 					}
 					break;
@@ -154,6 +158,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						AppConfig.timestampedStandardPrint("Checking for completion (AB): " +
 								collectedABValues.size() + "/" + AppConfig.getServentCount());
 
+						//05. The algorithm completes once the initiator has received states from all processes.
 						if (collectedABValues.size() == AppConfig.getServentCount()) {
 							waiting = false;
 						}
@@ -288,7 +293,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 		// Fill arrays from transaction lists
 		for (Message msg : sendTransactions) {
 			if (msg.getMessageType() == servent.message.MessageType.TRANSACTION) {
-				int receiverId = msg.getOriginalSenderInfo().getId();
+				int receiverId = msg.getReceiverInfo().getId();
 				sent[receiverId]++;
 			}
 		}

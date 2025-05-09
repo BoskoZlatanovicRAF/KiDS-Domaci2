@@ -1,4 +1,4 @@
-package app.snapshot_bitcake;
+package app.snapshot_bitcake.cc_coordinated_checkpointing;
 
 import java.io.Serializable;
 

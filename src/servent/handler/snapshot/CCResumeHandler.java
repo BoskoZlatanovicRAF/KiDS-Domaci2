@@ -1,7 +1,7 @@
 package servent.handler.snapshot;
 
 import app.AppConfig;
-import app.snapshot_bitcake.CCBitcakeManager;
+import app.snapshot_bitcake.cc_coordinated_checkpointing.CCBitcakeManager;
 import app.snapshot_bitcake.SnapshotCollector;
 import servent.handler.MessageHandler;
 import servent.message.Message;

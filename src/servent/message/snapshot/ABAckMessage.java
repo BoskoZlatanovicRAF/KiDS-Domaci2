@@ -11,26 +11,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ABTellAmountMessage extends AB_AV_Message {
+public class ABAckMessage extends AB_AV_Message {
 
     private static final long serialVersionUID = -643618544187514941L;
 
     private final List<Message> sendTransactions;
     private final List<Message> receivedTransactions;
 
-    public ABTellAmountMessage(ServentInfo sender, ServentInfo receiver, ServentInfo neighbor,
-                               Map<Integer, Integer> senderVectorClock, int amount,
-                               List<Message> sendTransactions, List<Message> receivedTransactions) {
+    public ABAckMessage(ServentInfo sender, ServentInfo receiver, ServentInfo neighbor,
+                        Map<Integer, Integer> senderVectorClock, int amount,
+                        List<Message> sendTransactions, List<Message> receivedTransactions) {
         super(MessageType.ACHARYA_BADRINATH_TELL_AMOUNT, sender, receiver, String.valueOf(amount), senderVectorClock);
 
         this.sendTransactions = new CopyOnWriteArrayList<>(sendTransactions);
         this.receivedTransactions = new CopyOnWriteArrayList<>(receivedTransactions);
     }
 
-    protected ABTellAmountMessage(MessageType type, ServentInfo originalSenderInfo, ServentInfo receiverInfo,
-                                  boolean white, List<ServentInfo> routeList, String messageText,
-                                  int messageId, Map<Integer, Integer> senderVectorClock,
-                                  List<Message> sendTransactions, List<Message> receivedTransactions) {
+    protected ABAckMessage(MessageType type, ServentInfo originalSenderInfo, ServentInfo receiverInfo,
+                           boolean white, List<ServentInfo> routeList, String messageText,
+                           int messageId, Map<Integer, Integer> senderVectorClock,
+                           List<Message> sendTransactions, List<Message> receivedTransactions) {
         super(type, originalSenderInfo, receiverInfo, white, routeList, messageText, messageId, senderVectorClock);
 
         this.sendTransactions = sendTransactions;
@@ -51,7 +51,7 @@ public class ABTellAmountMessage extends AB_AV_Message {
 
         List<ServentInfo> newRouteList = new ArrayList<>(getRoute());
         newRouteList.add(newRouteItem);
-        Message toReturn = new ABTellAmountMessage(getMessageType(), getOriginalSenderInfo(),
+        Message toReturn = new ABAckMessage(getMessageType(), getOriginalSenderInfo(),
                 getReceiverInfo(), isWhite(), newRouteList, getMessageText(),
                 getMessageId(), getSenderVectorClock(), sendTransactions, receivedTransactions);
 
@@ -63,7 +63,7 @@ public class ABTellAmountMessage extends AB_AV_Message {
         if (AppConfig.myServentInfo.getNeighbors().contains(newReceiverId)) {
             ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
-            Message toReturn = new ABTellAmountMessage(getMessageType(), getOriginalSenderInfo(),
+            Message toReturn = new ABAckMessage(getMessageType(), getOriginalSenderInfo(),
                     newReceiverInfo, isWhite(), getRoute(), getMessageText(),
                     getMessageId(), getSenderVectorClock(), sendTransactions, receivedTransactions);
 

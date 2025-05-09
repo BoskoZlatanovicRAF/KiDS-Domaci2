@@ -1,7 +1,5 @@
 package cli.command;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import app.AppConfig;
@@ -44,7 +42,6 @@ public class TransactionBurstCommand implements CLICommand {
 
 
 					CausalBroadcastShared.incrementClock(AppConfig.myServentInfo.getId());
-					Map<Integer, Integer> vectorClockCopy = new ConcurrentHashMap<>(CausalBroadcastShared.getVectorClock());
 
 					Message transactionMessage = new TransactionMessage(AppConfig.myServentInfo, neighborInfo, amount, bitcakeManager);
 

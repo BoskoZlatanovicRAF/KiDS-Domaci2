@@ -1,7 +1,10 @@
-package app.snapshot_bitcake;
+package app.snapshot_bitcake.cc_coordinated_checkpointing;
 
 import app.AppConfig;
 import app.ServentInfo;
+import app.snapshot_bitcake.BitcakeManager;
+import app.snapshot_bitcake.SnapshotCollector;
+import app.snapshot_bitcake.SnapshotCollectorWorker;
 import servent.message.Message;
 import servent.message.snapshot.CCAckMessage;
 import servent.message.snapshot.CCSnapshotRequestMessage;
