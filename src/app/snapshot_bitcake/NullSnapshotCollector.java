@@ -28,7 +28,12 @@ public class NullSnapshotCollector implements SnapshotCollector {
 	public void addNaiveSnapshotInfo(String snapshotSubject, int amount) {}
 
 	@Override
-	public void addAcharyaBadrinathSnapshotInfo(String snapshotSubject, int amount, List<Message> sendTransactions, List<Message> receivedTransactions) {
+	public void addABSnapshotInfo(String snapshotSubject, int amount, List<Message> sendTransactions, List<Message> receivedTransactions) {
+
+	}
+
+	@Override
+	public void addAVSnapshotInfo(int id, int amount) {
 
 	}
 

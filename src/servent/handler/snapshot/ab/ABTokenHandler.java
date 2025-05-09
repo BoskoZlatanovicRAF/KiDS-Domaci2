@@ -1,4 +1,4 @@
-package servent.handler.snapshot;
+package servent.handler.snapshot.ab;
 
 import app.AppConfig;
 import app.CausalBroadcastShared;
@@ -7,7 +7,7 @@ import app.snapshot_bitcake.SnapshotCollector;
 import servent.handler.MessageHandler;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.snapshot.ABAckMessage;
+import servent.message.snapshot.ab.ABAckMessage;
 import servent.message.util.MessageUtil;
 
 import java.util.Map;
@@ -35,23 +35,23 @@ public class ABTokenHandler implements MessageHandler {
 
 
             //03. Each process maintains SENT and RECD arrays, and sends them to the initiator.
-            Message tellMessage = new ABAckMessage(
+            Message ackMessage = new ABAckMessage(
                     AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(),
                     null, vectorClock, currentAmount,
                     CausalBroadcastShared.getSendTransactions(),
                     CausalBroadcastShared.getReceivedTransactions()
             );
 
-            CausalBroadcastShared.commitCausalMessage(tellMessage);
+            CausalBroadcastShared.commitCausalMessage(ackMessage);
             //04. Process pᵢ sends an acknowledgment to the initiator.
-            MessageUtil.sendMessage(tellMessage);
+            MessageUtil.sendMessage(ackMessage);
 
 
             AppConfig.timestampedStandardPrint("Sent AB tell response to " + clientMessage.getOriginalSenderInfo().getId() +
                     " with amount: " + currentAmount);
 
         } else {
-            AppConfig.timestampedErrorPrint("Ask amount handler got: " + clientMessage);
+            AppConfig.timestampedErrorPrint("Token amount handler got: " + clientMessage);
         }
     }
 }

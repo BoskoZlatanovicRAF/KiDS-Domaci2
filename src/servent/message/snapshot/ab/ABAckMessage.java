@@ -1,4 +1,4 @@
-package servent.message.snapshot;
+package servent.message.snapshot.ab;
 
 import app.AppConfig;
 import app.ServentInfo;
@@ -43,35 +43,5 @@ public class ABAckMessage extends AB_AV_Message {
 
     public List<Message> getReceivedTransactions() {
         return receivedTransactions;
-    }
-
-    @Override
-    public Message makeMeASender() {
-        ServentInfo newRouteItem = AppConfig.myServentInfo;
-
-        List<ServentInfo> newRouteList = new ArrayList<>(getRoute());
-        newRouteList.add(newRouteItem);
-        Message toReturn = new ABAckMessage(getMessageType(), getOriginalSenderInfo(),
-                getReceiverInfo(), isWhite(), newRouteList, getMessageText(),
-                getMessageId(), getSenderVectorClock(), sendTransactions, receivedTransactions);
-
-        return toReturn;
-    }
-
-    @Override
-    public Message changeReceiver(Integer newReceiverId) {
-        if (AppConfig.myServentInfo.getNeighbors().contains(newReceiverId)) {
-            ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
-
-            Message toReturn = new ABAckMessage(getMessageType(), getOriginalSenderInfo(),
-                    newReceiverInfo, isWhite(), getRoute(), getMessageText(),
-                    getMessageId(), getSenderVectorClock(), sendTransactions, receivedTransactions);
-
-            return toReturn;
-        } else {
-            AppConfig.timestampedErrorPrint("Trying to make a message for " + newReceiverId + " who is not a neighbor.");
-
-            return null;
-        }
     }
 }

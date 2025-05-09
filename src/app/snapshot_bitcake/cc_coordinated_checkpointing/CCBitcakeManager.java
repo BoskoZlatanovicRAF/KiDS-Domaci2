@@ -6,8 +6,8 @@ import app.snapshot_bitcake.BitcakeManager;
 import app.snapshot_bitcake.SnapshotCollector;
 import app.snapshot_bitcake.SnapshotCollectorWorker;
 import servent.message.Message;
-import servent.message.snapshot.CCAckMessage;
-import servent.message.snapshot.CCSnapshotRequestMessage;
+import servent.message.snapshot.cc.CCAckMessage;
+import servent.message.snapshot.cc.CCSnapshotRequestMessage;
 import servent.message.util.MessageUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;

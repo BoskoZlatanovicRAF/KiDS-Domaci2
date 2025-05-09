@@ -1,11 +1,11 @@
-package servent.handler.snapshot;
+package servent.handler.snapshot.ab;
 
 import app.AppConfig;
 import app.snapshot_bitcake.SnapshotCollector;
 import servent.handler.MessageHandler;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.snapshot.ABAckMessage;
+import servent.message.snapshot.ab.ABAckMessage;
 
 public class ABAckHandler implements MessageHandler {
 
@@ -24,14 +24,14 @@ public class ABAckHandler implements MessageHandler {
                 int neighborAmount = Integer.parseInt(clientMessage.getMessageText());
                 ABAckMessage tellAmountMessage = (ABAckMessage) clientMessage;
 
-                snapshotCollector.addAcharyaBadrinathSnapshotInfo(
+                snapshotCollector.addABSnapshotInfo(
                         "node" + clientMessage.getOriginalSenderInfo().getId(),
                         neighborAmount,
                         tellAmountMessage.getSendTransactions(),
                         tellAmountMessage.getReceivedTransactions()
                 );
             } else {
-                AppConfig.timestampedErrorPrint("Tell amount handler got: " + clientMessage);
+                AppConfig.timestampedErrorPrint("Ack amount handler got: " + clientMessage);
             }
         } catch (Exception e) {
             AppConfig.timestampedErrorPrint(e.getMessage());

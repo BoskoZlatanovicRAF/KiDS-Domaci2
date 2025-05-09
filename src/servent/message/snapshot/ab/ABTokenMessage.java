@@ -1,4 +1,4 @@
-package servent.message.snapshot;
+package servent.message.snapshot.ab;
 
 import app.ServentInfo;
 import servent.message.AB_AV_Message;

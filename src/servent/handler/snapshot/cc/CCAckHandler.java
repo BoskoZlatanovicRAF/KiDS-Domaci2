@@ -1,4 +1,4 @@
-package servent.handler.snapshot;
+package servent.handler.snapshot.cc;
 
 import app.AppConfig;
 import app.snapshot_bitcake.cc_coordinated_checkpointing.CCSnapshotResult;

@@ -11,12 +11,16 @@ import app.CausalBroadcastShared;
 import app.ServentInfo;
 import app.snapshot_bitcake.ab_acharya_badrinath.ABBitcakeManager;
 import app.snapshot_bitcake.ab_acharya_badrinath.ABSnapshotResult;
+import app.snapshot_bitcake.av_alagar_venkatesan.AVBitcakeManager;
+import app.snapshot_bitcake.av_alagar_venkatesan.AVSnapshotResult;
 import app.snapshot_bitcake.cc_coordinated_checkpointing.CCBitcakeManager;
 import app.snapshot_bitcake.cc_coordinated_checkpointing.CCSnapshotResult;
 import servent.message.Message;
-import servent.message.snapshot.ABTokenMessage;
-import servent.message.snapshot.CCResumeMessage;
-import servent.message.snapshot.CCSnapshotRequestMessage;
+import servent.message.MessageType;
+import servent.message.snapshot.ab.ABTokenMessage;
+import servent.message.snapshot.av.AVTokenMessage;
+import servent.message.snapshot.cc.CCResumeMessage;
+import servent.message.snapshot.cc.CCSnapshotRequestMessage;
 import servent.message.util.MessageUtil;
 
 /**
@@ -52,6 +56,10 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 		collectedABRecd.put(id, recd);
 	}
 
+
+	// AV algorithm
+	private Map<Integer, AVSnapshotResult> collectedAVValues = new ConcurrentHashMap<>();
+
 	public SnapshotCollectorWorker(SnapshotType snapshotType) {
 		this.snapshotType = snapshotType;
 
@@ -61,6 +69,9 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 				break;
 			case ACHARYA_BADRINATH:
 				bitcakeManager = new ABBitcakeManager();
+				break;
+			case ALAGAR_VENKATESAN:
+				bitcakeManager = new AVBitcakeManager();
 				break;
 			case NONE:
 				AppConfig.timestampedErrorPrint("Making snapshot collector without specifying type. Exiting...");
@@ -129,6 +140,18 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						MessageUtil.sendMessage(tokenMessage);
 					}
 					break;
+				case ALAGAR_VENKATESAN:
+					AppConfig.timestampedStandardPrint("Initiating Alagar-Venkatesan snapshot");
+
+					for (int i = 0; i < AppConfig.getServentCount(); i++) {
+						ServentInfo serventInfo = AppConfig.getInfoById(i);
+						Map<Integer, Integer> vectorClock = new ConcurrentHashMap<>(CausalBroadcastShared.getVectorClock());
+
+						Message tokenMessage = new AVTokenMessage(MessageType.AV_TOKEN, AppConfig.myServentInfo, serventInfo, vectorClock);
+						MessageUtil.sendMessage(tokenMessage);
+					}
+					break;
+
 
 				case NONE:
 					//Shouldn't be able to come here. See constructor.
@@ -160,6 +183,14 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 
 						//05. The algorithm completes once the initiator has received states from all processes.
 						if (collectedABValues.size() == AppConfig.getServentCount()) {
+							waiting = false;
+						}
+						break;
+					case ALAGAR_VENKATESAN:
+						AppConfig.timestampedStandardPrint("Waiting for AV_DONEs: " +
+								collectedAVValues.size() + "/" + AppConfig.getServentCount());
+
+						if (collectedAVValues.size() == AppConfig.getServentCount()) {
 							waiting = false;
 						}
 						break;
@@ -264,7 +295,22 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						collecting.set(false);
 					}
 					break;
+				case ALAGAR_VENKATESAN:
+					if (collectedAVValues.size() == AppConfig.getServentCount()) {
+						sum = 0;
+						for (Entry<Integer, AVSnapshotResult> serventResult : collectedAVValues.entrySet()) {
+							sum += serventResult.getValue().getRecordedAmount();
+							AppConfig.timestampedStandardPrint(
+									"Servent " + serventResult.getKey() + " has " +
+											serventResult.getValue().getRecordedAmount() + " bitcakes");
+						}
 
+						AppConfig.timestampedStandardPrint("System bitcake count (AV): " + sum);
+
+						collectedAVValues.clear();
+						collecting.set(false);
+					}
+					break;
 				case NONE:
 					//Shouldn't be able to come here. See constructor.
 					break;
@@ -279,7 +325,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 	}
 
 	@Override
-	public void addAcharyaBadrinathSnapshotInfo(String snapshotSubject, int amount, List<Message> sendTransactions, List<Message> receivedTransactions) {
+	public void addABSnapshotInfo(String snapshotSubject, int amount, List<Message> sendTransactions, List<Message> receivedTransactions) {
 		int id = Integer.parseInt(snapshotSubject.replace("node", ""));
 
 		// Create a snapshot result object
@@ -307,6 +353,12 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 
 		// Store the information
 		addABSnapshotInfo(id, result, sent, recd);
+	}
+
+	@Override
+	public void addAVSnapshotInfo(int id, int amount) {
+		AVSnapshotResult result = new AVSnapshotResult(id, amount);
+		collectedAVValues.put(id, result);
 	}
 
 	@Override

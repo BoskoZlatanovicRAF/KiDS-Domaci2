@@ -73,7 +73,7 @@ public class CausalBroadcastShared {
         checkPendingMessages();
     }
 
-    private static boolean otherClockGreater(Map<Integer, Integer> clock1, Map<Integer, Integer> clock2) {
+    public static boolean otherClockGreater(Map<Integer, Integer> clock1, Map<Integer, Integer> clock2) {
         if (clock1.size() != clock2.size()) {
             throw new IllegalArgumentException("Clocks are not same size how why");
         }
@@ -134,5 +134,13 @@ public class CausalBroadcastShared {
 
     public static List<Message> getSendTransactions() {
         return sendTransactions;
+    }
+
+    public static Object getPendingMessagesLock() {
+        return pendingMessagesLock;
+    }
+
+    public static List<Message> getPendingMessages() {
+        return new CopyOnWriteArrayList<>(pendingMessages);
     }
 }

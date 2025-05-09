@@ -16,7 +16,14 @@ import app.snapshot_bitcake.SnapshotCollectorWorker;
 import servent.handler.MessageHandler;
 import servent.handler.NullHandler;
 import servent.handler.TransactionHandler;
-import servent.handler.snapshot.*;
+import servent.handler.snapshot.ab.ABAckHandler;
+import servent.handler.snapshot.ab.ABTokenHandler;
+import servent.handler.snapshot.av.AVDoneHandler;
+import servent.handler.snapshot.av.AVTerminateHandler;
+import servent.handler.snapshot.av.AVTokenHandler;
+import servent.handler.snapshot.cc.CCAckHandler;
+import servent.handler.snapshot.cc.CCResumeHandler;
+import servent.handler.snapshot.cc.CCSnapshotRequestHandler;
 import servent.message.Message;
 import servent.message.util.MessageUtil;
 
@@ -93,6 +100,15 @@ public class SimpleServentListener implements Runnable, Cancellable {
 						break;
 					case ACHARYA_BADRINATH_TELL_AMOUNT:
 						messageHandler = new ABAckHandler(clientMessage, snapshotCollector);
+						break;
+					case AV_TOKEN:
+						messageHandler = new AVTokenHandler(clientMessage, snapshotCollector);
+						break;
+					case AV_DONE:
+						messageHandler = new AVDoneHandler(clientMessage, (SnapshotCollectorWorker)snapshotCollector);
+						break;
+					case AV_TERMINATE:
+						messageHandler = new AVTerminateHandler(clientMessage, (SnapshotCollectorWorker)snapshotCollector);
 						break;
 					case POISON:
 						break;

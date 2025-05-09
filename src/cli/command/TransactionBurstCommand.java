@@ -41,7 +41,7 @@ public class TransactionBurstCommand implements CLICommand {
 					 */
 
 
-					CausalBroadcastShared.incrementClock(AppConfig.myServentInfo.getId());
+//					CausalBroadcastShared.incrementClock(AppConfig.myServentInfo.getId());
 
 					Message transactionMessage = new TransactionMessage(AppConfig.myServentInfo, neighborInfo, amount, bitcakeManager);
 

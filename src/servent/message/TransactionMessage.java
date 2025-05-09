@@ -1,7 +1,11 @@
 package servent.message;
 
+import app.CausalBroadcastShared;
 import app.ServentInfo;
 import app.snapshot_bitcake.BitcakeManager;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a bitcake transaction. We are sending some bitcakes to another node.
@@ -14,10 +18,13 @@ public class TransactionMessage extends BasicMessage {
 	private static final long serialVersionUID = -333251402058492901L;
 
 	private transient BitcakeManager bitcakeManager;
-	
+
+	private final Map<Integer, Integer> senderVectorClock;
+
 	public TransactionMessage(ServentInfo sender, ServentInfo receiver, int amount, BitcakeManager bitcakeManager) {
 		super(MessageType.TRANSACTION, sender, receiver, String.valueOf(amount));
 		this.bitcakeManager = bitcakeManager;
+		this.senderVectorClock = new ConcurrentHashMap<>(CausalBroadcastShared.getVectorClock());
 	}
 	
 	/**
@@ -30,5 +37,9 @@ public class TransactionMessage extends BasicMessage {
 		int amount = Integer.parseInt(getMessageText());
 		
 		bitcakeManager.takeSomeBitcakes(amount);
+	}
+
+	public Map<Integer, Integer> getSenderVectorClock() {
+		return senderVectorClock;
 	}
 }
