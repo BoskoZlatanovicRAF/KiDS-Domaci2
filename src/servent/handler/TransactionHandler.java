@@ -34,7 +34,7 @@ public class TransactionHandler implements MessageHandler {
 
 			if(bitcakeManager instanceof ABBitcakeManager){
 				CausalBroadcastShared.addReceivedTransaction(clientMessage);
-				CausalBroadcastShared.commitCausalMessage(clientMessage, bitcakeManager);
+				CausalBroadcastShared.commitCausalMessage(clientMessage);
 
 			}
 
