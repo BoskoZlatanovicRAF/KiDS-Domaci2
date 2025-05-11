@@ -6,6 +6,8 @@ import app.AppConfig;
 import app.CausalBroadcastShared;
 import app.ServentInfo;
 import app.snapshot_bitcake.BitcakeManager;
+import app.snapshot_bitcake.ab_acharya_badrinath.ABBitcakeManager;
+import app.snapshot_bitcake.av_alagar_venkatesan.AVBitcakeManager;
 import servent.message.Message;
 import servent.message.TransactionMessage;
 import servent.message.util.MessageUtil;
@@ -45,8 +47,10 @@ public class TransactionBurstCommand implements CLICommand {
 
 					Message transactionMessage = new TransactionMessage(AppConfig.myServentInfo, neighborInfo, amount, bitcakeManager);
 
+					if(bitcakeManager instanceof ABBitcakeManager || bitcakeManager instanceof AVBitcakeManager) {
+						CausalBroadcastShared.addSendTransaction(transactionMessage);
+					}
 
-					CausalBroadcastShared.addSendTransaction(transactionMessage);
 
 					MessageUtil.sendMessage(transactionMessage);
 				}

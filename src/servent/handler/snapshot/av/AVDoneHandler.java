@@ -52,9 +52,11 @@ public class AVDoneHandler implements MessageHandler {
                 MessageUtil.sendMessage(terminateMessage);
             }
 
-            // Optionally: stop your own logging too
-//            snapshotCollector.getBitcakeManager().unblockSnapshot();  // or stopLogging()
         }
 
+    }
+
+    public static void clearDoneNodes() {
+        doneNodes.clear();
     }
 }

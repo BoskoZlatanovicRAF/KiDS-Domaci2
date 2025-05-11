@@ -33,6 +33,9 @@ public class AVTerminateHandler implements MessageHandler {
         // Stop tracking old messages
         bitcakeManager.stopLogging();
 
+
+        AVDoneHandler.clearDoneNodes();
+
         // Print recorded result
         int localAmount = bitcakeManager.getCurrentBitcakeAmount();
         AppConfig.timestampedStandardPrint("AV snapshot result for node " + AppConfig.myServentInfo.getId() +

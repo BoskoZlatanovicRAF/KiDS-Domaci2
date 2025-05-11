@@ -4,6 +4,7 @@ import app.AppConfig;
 import app.CausalBroadcastShared;
 import app.snapshot_bitcake.BitcakeManager;
 import app.snapshot_bitcake.ab_acharya_badrinath.ABBitcakeManager;
+import app.snapshot_bitcake.av_alagar_venkatesan.AVBitcakeManager;
 import servent.message.Message;
 import servent.message.MessageType;
 
@@ -36,6 +37,12 @@ public class TransactionHandler implements MessageHandler {
 				CausalBroadcastShared.addReceivedTransaction(clientMessage);
 				CausalBroadcastShared.commitCausalMessage(clientMessage);
 
+			}
+
+			if (bitcakeManager instanceof AVBitcakeManager) {
+				CausalBroadcastShared.addReceivedTransaction(clientMessage);
+				CausalBroadcastShared.commitCausalMessage(clientMessage);
+				((AVBitcakeManager) bitcakeManager).logIfOld(clientMessage);
 			}
 
 
