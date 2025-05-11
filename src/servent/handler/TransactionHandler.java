@@ -47,6 +47,8 @@ public class TransactionHandler implements MessageHandler {
 
 
 
+		}
+		else {
 			AppConfig.timestampedErrorPrint("Transaction handler got: " + clientMessage);
 		}
 	}
