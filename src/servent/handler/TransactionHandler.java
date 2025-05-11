@@ -3,6 +3,7 @@ package servent.handler;
 import app.AppConfig;
 import app.CausalBroadcastShared;
 import app.snapshot_bitcake.BitcakeManager;
+import app.snapshot_bitcake.ab_acharya_badrinath.ABBitcakeManager;
 import servent.message.Message;
 import servent.message.MessageType;
 
@@ -31,7 +32,11 @@ public class TransactionHandler implements MessageHandler {
 			
 			bitcakeManager.addSomeBitcakes(amountNumber);
 
-			CausalBroadcastShared.addReceivedTransaction(clientMessage);
+			if(bitcakeManager instanceof ABBitcakeManager){
+				CausalBroadcastShared.addReceivedTransaction(clientMessage);
+				CausalBroadcastShared.commitCausalMessage(clientMessage, bitcakeManager);
+
+			}
 
 
 

@@ -77,6 +77,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 				AppConfig.timestampedErrorPrint("Making snapshot collector without specifying type. Exiting...");
 				System.exit(0);
 		}
+
 	}
 
 	@Override
@@ -187,8 +188,8 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						}
 						break;
 					case ALAGAR_VENKATESAN:
-						AppConfig.timestampedStandardPrint("Waiting for AV_DONEs: " +
-								collectedAVValues.size() + "/" + AppConfig.getServentCount());
+//						AppConfig.timestampedStandardPrint("Waiting for AV_DONEs: " +
+//								collectedAVValues.size() + "/" + AppConfig.getServentCount());
 
 						if (collectedAVValues.size() == AppConfig.getServentCount()) {
 							waiting = false;
@@ -292,7 +293,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						collectedABValues.clear();
 						collectedABSent.clear();
 						collectedABRecd.clear();
-						collecting.set(false);
+//						collecting.set(false);
 					}
 					break;
 				case ALAGAR_VENKATESAN:
@@ -308,7 +309,7 @@ public class SnapshotCollectorWorker implements SnapshotCollector {
 						AppConfig.timestampedStandardPrint("System bitcake count (AV): " + sum);
 
 						collectedAVValues.clear();
-						collecting.set(false);
+//						collecting.set(false);
 					}
 					break;
 				case NONE:
